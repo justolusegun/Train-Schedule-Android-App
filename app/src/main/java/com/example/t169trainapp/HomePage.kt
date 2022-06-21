@@ -1,16 +1,18 @@
  package com.example.t169trainapp
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.*
+import android.view.View
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.t169trainapp.adapter.CustomRecyclerAdapter
-import com.example.t169trainapp.models.CustomApi
 import com.example.t169trainapp.models.FetchApi
 import com.example.t169trainapp.models.PostModel
+import com.facebook.shimmer.ShimmerFrameLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
  class HomePage : AppCompatActivity() {
      private lateinit var CustomAdapter : CustomRecyclerAdapter
+     private var ShimmerViewContainer: ShimmerFrameLayout? = null
 //     val recycler_view = findViewById<RecyclerView>(R.id.recyclerView)
 
      private val BASE_URL = "https://traint169.netlify.app"
@@ -26,6 +29,8 @@ import retrofit2.converter.gson.GsonConverterFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
+        ShimmerViewContainer = findViewById(R.id.shimmerFrameLayout);
+
         getCustomData()
 
         val searchButton = findViewById<ImageView>(R.id.search)
@@ -41,6 +46,8 @@ import retrofit2.converter.gson.GsonConverterFactory
         val toast = Toast.makeText(applicationContext, text, duration).show()
 
     }
+
+
 
 
       fun getCustomData(){
@@ -64,6 +71,8 @@ import retrofit2.converter.gson.GsonConverterFactory
                       adapter = CustomAdapter
                   }
                   CustomAdapter.submitList(responseBody)
+                  ShimmerViewContainer?.stopShimmerAnimation();
+                  ShimmerViewContainer?.visibility = View.GONE;
               }
 
               override fun onFailure(call: Call<List<PostModel>?>, t: Throwable) {
@@ -72,4 +81,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 
           })
      }
+
+
+     override fun onResume() {
+         super.onResume();
+         ShimmerViewContainer?.startShimmerAnimation();
+     }
+
+
+     override fun onPause() {
+         ShimmerViewContainer?.stopShimmerAnimation();
+         super.onPause();
+     }
  }
+
+
